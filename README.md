@@ -45,7 +45,7 @@ The script `TMVA_training.py` implements a TMVA workflow for training multiclass
 
 ## Application
 
-For application, we use two approaches. The classification of the analysis ntuples using the `TMVA.Reader` allows for a rapid prototyping and fast results on a small dataset. However, the approach is not suitable for millions of events if the `keras` wrapper of `PyMVA` is used. To run quickly over the full dataset with a `keras` model, we recommend to use the [`lwtnn`](www.github.com/lwtnn/lwtnn) package.
+For application, we use two approaches. The classification of the analysis ntuples using the `TMVA.Reader` allows for a rapid prototyping and fast results on a small dataset. However, the approach is not suitable for millions of events if the `keras` wrapper of `PyMVA` is used. To run quickly over the full dataset with a `keras` model, we recommend to use the [`lwtnn`](https://www.github.com/lwtnn/lwtnn) package.
 
 ### TMVA solution
 
