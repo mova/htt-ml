@@ -1,7 +1,7 @@
 # Path to output directory
 output_path: .
 
-# Filename of merged training dataset
+# Filename postfix of merged training dataset
 output_filename: "example_dataset.root"
 
 # Path to nominal ntuple in files
