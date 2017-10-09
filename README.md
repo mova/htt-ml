@@ -40,6 +40,7 @@ The script `TMVA_training.py` implements a TMVA workflow for training multiclass
 
 ```bash
 ./training/TMVA_training.py training/example_training_config.yaml 0
+./training/TMVA_training.py training/example_training_config.yaml 1
 ```
 
 ## Application

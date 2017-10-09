@@ -63,7 +63,7 @@ def main(args, config):
 
     # Book MVA methods
     factory.BookMethod(
-        dataloader, ROOT.TMVA.Types.kPyKeras, "PyKeras",
+        dataloader, ROOT.TMVA.Types.kPyKeras, "PyKeras_fold{}".format(args.fold),
         "!H:!V:VarTransform=N:FilenameModel=fold{}_model.h5:".format(args.fold) +
         "SaveBestOnly=true:TriesEarlyStopping=-1:" +
         "NumEpochs=30:BatchSize=100")

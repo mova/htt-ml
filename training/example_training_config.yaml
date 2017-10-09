@@ -14,7 +14,7 @@ classes:
 
 # Set class weights
 class_weights:
-    signal: 10.0
+    signal: 1.0
     background_1: 1.0
     background_2: 1.0
 
