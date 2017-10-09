@@ -19,8 +19,9 @@ def parse_arguments():
 
 
 def main(args):
-    # Processes, which contribute to the dataset
-    # The observables of the processes are the variables "x" and "y", which follow a Gaussian 2D distributions with mean "mean", unity variance and correlation "corr".
+    # Processes, which contribute to the dataset.
+    # The observables of the processes are the variables "x" and "y", which follow
+    # a Gaussian 2D distributions with mean "mean", unity variance and correlation "corr".
     processes = {
         "signal": {
             "num_entries": 1000,
@@ -44,15 +45,17 @@ def main(args):
 
     # Write Monte Carlo-like output files
     for process in processes:
-        file_ = ROOT.TFile("{}.root".format(process), "RECREATE")
-        tree = ROOT.TTree(process, process)
+        file_ = ROOT.TFile("example_{}.root".format(process), "RECREATE")
+        tree = ROOT.TTree("ntuple", "ntuple")
 
-        x = array('f', [-999])
-        tree.Branch('x', x, 'x/F')
-        y = array('f', [-999])
-        tree.Branch('y', y, 'y/F')
-        weights = array('f', [-999])
-        tree.Branch('weights', weights, 'weights/F')
+        x = array("f", [-999])
+        tree.Branch("x", x, "x/F")
+        y = array("f", [-999])
+        tree.Branch("y", y, "y/F")
+        weights = array("f", [-999])
+        tree.Branch("weights", weights, "weights/F")
+        event = array("f", [-999])
+        tree.Branch("event", event, "event/F")
 
         covariance_matrix = [[1.0, processes[process]["corr"]],
                              [processes[process]["corr"], 1.0]]
@@ -61,24 +64,27 @@ def main(args):
             covariance_matrix,
             size=processes[process]["num_entries"])
 
-        for value in values:
+        for i, value in enumerate(values):
             x[0] = value[0]
             y[0] = value[1]
             weights[0] = processes[process]["norm"] / float(
                 processes[process]["num_entries"])
+            event[0] = i
             tree.Fill()
 
         file_.Write()
         file_.Close()
 
     # Write data-like output file
-    file_ = ROOT.TFile("data.root", "RECREATE")
-    tree = ROOT.TTree("data", "data")
+    file_ = ROOT.TFile("example_data.root", "RECREATE")
+    tree = ROOT.TTree("ntuple", "ntuple")
 
-    x = array('f', [-999])
-    tree.Branch('x', x, 'x/F')
-    y = array('f', [-999])
-    tree.Branch('y', y, 'y/F')
+    x = array("f", [-999])
+    tree.Branch("x", x, "x/F")
+    y = array("f", [-999])
+    tree.Branch("y", y, "y/F")
+    event = array("f", [-999])
+    tree.Branch("event", event, "event/F")
 
     for process in processes:
         covariance_matrix = [[1.0, processes[process]["corr"]],
@@ -89,9 +95,10 @@ def main(args):
             size=int(processes[process]["num_entries"] *
                      processes[process]["norm"]))
 
-        for value in values:
+        for i, value in enumerate(values):
             x[0] = value[0]
             y[0] = value[1]
+            event[0] = i
             tree.Fill()
 
     file_.Write()

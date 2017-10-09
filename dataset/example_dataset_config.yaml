@@ -1,0 +1,36 @@
+# Path to output directory
+output_path: .
+
+# Filename of merged training dataset
+output_filename: "example_dataset.root"
+
+# Path to nominal ntuple in files
+tree_path: "ntuple"
+
+# Base path prefix for processes files
+base_path: .
+
+# Branch in all files holding the event number used for creating the folds
+event_branch: "event"
+
+# Define the processes and the according files
+processes:
+    signal:
+        files:
+            - example_signal.root
+        cut_string: "x>0.0"
+
+    background_1:
+        files:
+            - example_background_1.root
+        cut_string: "x>0.0"
+
+    background_2:
+        files:
+            - example_background_2.root
+        cut_string: "x>0.0"
+
+    data:
+        files:
+            - example_data.root
+        cut_string: "x>0.0"
