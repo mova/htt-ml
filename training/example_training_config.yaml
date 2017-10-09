@@ -19,7 +19,7 @@ class_weights:
     background_2: 1.0
 
 # Define global scale factor, which is multiplied to all event weights
-global_weight_scale: 1000.0
+global_weight_scale: 10000.0
 
 # Set event weight variable
 event_weights: weights

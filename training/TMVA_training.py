@@ -50,7 +50,7 @@ def main(args, config):
     # Set split of training dataset in training and validation set
     prepare_classes = ""
     for class_ in config["classes"]:
-        prepare_classes += 'TrainTestSplit_{}={}:'.format(
+        prepare_classes += "TrainTestSplit_{}={}:".format(
             class_, config["train_test_split"])
     dataloader.PrepareTrainingAndTestTree(
         ROOT.TCut(""), prepare_classes + "SplitMode=Random:NormMode=None")
@@ -69,9 +69,9 @@ def main(args, config):
         "NumEpochs=30:BatchSize=100")
 
     factory.BookMethod(
-        dataloader, ROOT.TMVA.Types.kBDT, 'BDT',
+        dataloader, ROOT.TMVA.Types.kBDT, "BDT",
         "!H:!V:VarTransform=None:NTrees=1500:BoostType=Grad:Shrinkage=0.10:" +
-        "UseBaggedBoost:BaggedSampleFraction=0.50:nCuts=50:MaxDepth=5:SeparationType=GiniIndex"
+        "UseBaggedBoost:BaggedSampleFraction=0.50:nCuts=50:MaxDepth=3:SeparationType=GiniIndex"
     )
 
     # Run training and evaluation
