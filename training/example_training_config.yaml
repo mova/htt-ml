@@ -1,0 +1,33 @@
+# Training datasets for different folds
+datasets:
+    - fold0_example_dataset.root
+    - fold1_example_dataset.root
+
+# Base path for all output files
+output_path: .
+
+# Define classes based on tree names in dataset file
+classes:
+    - signal
+    - background_1
+    - background_2
+
+# Set class weights
+class_weights:
+    signal: 10.0
+    background_1: 1.0
+    background_2: 1.0
+
+# Define global scale factor, which is multiplied to all event weights
+global_weight_scale: 1000.0
+
+# Set event weight variable
+event_weights: weights
+
+# Define list of variables to be used for training
+variables:
+    - x
+    - y
+
+# Split of dataset in training and validation (in TMVA called training and testing)
+train_test_split: 0.75

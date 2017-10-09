@@ -24,19 +24,19 @@ def main(args):
     # a Gaussian 2D distributions with mean "mean", unity variance and correlation "corr".
     processes = {
         "signal": {
-            "num_entries": 1000,
+            "num_entries": 10000,
             "norm": 0.1,
             "mean": [0.0, 0.0],
             "corr": 0.0
         },
         "background_1": {
-            "num_entries": 1000,
+            "num_entries": 10000,
             "norm": 0.6,
             "mean": [0.5, 0.5],
             "corr": -0.7
         },
         "background_2": {
-            "num_entries": 1000,
+            "num_entries": 10000,
             "norm": 0.3,
             "mean": [-0.5, -0.5],
             "corr": 0.7

@@ -57,7 +57,7 @@ def main(args, config):
             logger.debug("Skim events with cut string: {}".format(cut_string))
             chain_skimmed = chain.CopyTree(cut_string)
             logger.debug("Found {} events for process {} after skimming.".
-                        format(chain.GetEntries(), process))
+                         format(chain.GetEntries(), process))
 
             # Rename chain to process name and write to output file
             logger.debug("Write output file for this process and fold.")
@@ -67,7 +67,7 @@ def main(args, config):
 
         # Combine all skimmed files using `hadd`
         logger.debug("Call `hadd` to combine files of processes for fold {}.".
-                    format(num_fold))
+                     format(num_fold))
         output_file = os.path.join(config["output_path"], "fold{}_{}".format(
             num_fold, config["output_filename"]))
         subprocess.call(["hadd", "-f", output_file] + created_files)
