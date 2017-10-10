@@ -17,6 +17,8 @@ def parse_arguments():
         "config_application", help="Path to application config file")
     parser.add_argument(
         "input", help="Path to input file, where response will be added.")
+    parser.add_argument(
+        "tree", help="Path to tree in the ROOT input file")
     return parser.parse_args()
 
 
@@ -42,7 +44,7 @@ def main(args, config_dataset, config_training, config_application):
 
     # Open input file and register branches with input and output variables
     file_ = ROOT.TFile(args.input, "UPDATE")
-    tree = file_.Get(config_dataset["tree_path"])
+    tree = file_.Get(args.tree)
 
     for variable in config_training["variables"]:
         tree.SetBranchAddress(variable, values[variable])
