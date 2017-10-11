@@ -4,7 +4,7 @@ This repository holds scripts used for training and application of various machi
 
 ## Set up the software stack
 
-`CVMFS` is used to source the appropriate software stacks. Locate the `CVMFS` mount point on your system and run the following setup script. Please note that you have to select the appropriate architecture for your system.
+CVMFS is used to source the appropriate software stacks. Locate the CVMFS mount point on your system and run the following setup script. Please note that you have to select the appropriate architecture for your system.
 
 ```bash
 source /cvmfs/sft.cern.ch/lcg/views/LCG_91/x86_64-slc6-gcc62-opt/setup.sh
@@ -46,6 +46,19 @@ The script `TMVA_training.py` implements a TMVA workflow for training multiclass
 ## Application
 
 For application, we use two approaches. The classification of the analysis ntuples using the `TMVA.Reader` allows for a rapid prototyping and fast results on a small dataset. However, the approach is not suitable for millions of events if the `keras` wrapper of `PyMVA` is used. To run quickly over the full dataset with a `keras` model, we recommend to use the [`lwtnn`](https://www.github.com/lwtnn/lwtnn) package.
+
+### Setup Keras
+
+Keras is a wrapper for Theano and TensorFlow, which is also available through CVMFS. The following environment variables can be set to control the most important options.
+
+```bash
+# Set the keras backend, either 'theano' or 'tensorflow'
+export KERAS_BACKEND=theano
+# Define the number of cores to be used, works only for theano backend
+export OMP_NUM_THREADS=12
+# This may be needed on SLC6 architectures
+export THEANO_FLAGS=gcc.cxxflags=-march=corei7
+```
 
 ### TMVA solution
 
