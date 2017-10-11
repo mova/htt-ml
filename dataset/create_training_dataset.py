@@ -45,9 +45,17 @@ def main(args, config):
             # Collect all files for this process in a chain
             chain = ROOT.TChain(config["tree_path"])
             for filename in config["processes"][process]["files"]:
-                chain.AddFile(os.path.join(config["base_path"], filename))
+                path = os.path.join(config["base_path"], filename)
+                if not os.path.exists(path):
+                    logger.fatal("File does not exist: {}".format(path))
+                chain.AddFile(path)
+
+            chain_numentries = chain.GetEntries()
+            if not chain_numentries > 0:
+                logger.fatal("Chain (before skimming) does not contain any events.")
+                raise Exception
             logger.debug("Found {} events for process {}.".format(
-                chain.GetEntries(), process))
+                chain_numentries, process))
 
             # Skim the events with the cut string
             cut_string = "({EVENT_BRANCH}%2=={NUM_FOLD})&&({CUT_STRING})".format(
@@ -55,9 +63,14 @@ def main(args, config):
                 NUM_FOLD=num_fold,
                 CUT_STRING=config["processes"][process]["cut_string"])
             logger.debug("Skim events with cut string: {}".format(cut_string))
+
             chain_skimmed = chain.CopyTree(cut_string)
+            chain_skimmed_numentries = chain_skimmed.GetEntries()
+            if not chain_skimmed_numentries > 0:
+                logger.fatal("Chain (after skimming) does not contain any events.")
+                raise Exception
             logger.debug("Found {} events for process {} after skimming.".
-                         format(chain.GetEntries(), process))
+                         format(chain_skimmed_numentries, process))
 
             # Rename chain to process name and write to output file
             logger.debug("Write output file for this process and fold.")
