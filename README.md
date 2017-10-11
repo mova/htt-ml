@@ -69,7 +69,8 @@ The script `TMVA_application.py` implements the `TMVA.Reader` using the informat
     dataset/example_dataset_config.yaml \
     training/example_training_config.yaml \
     application/example_application_config.yaml \
-    example_data.root
+    example_data.root \
+    ntuple
 ```
 
 Have a look at the toy data file `example_data.root`, which holds new branches with the response of the applied machine learning methods. As discriminating variable in the analysis, it is intended to use the variable `*max_score` with the cut string `*max_index==CLASS_NUMBER`, which selects the desired process.
