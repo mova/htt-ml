@@ -44,12 +44,12 @@ def main(args, config_dataset, config_training, config_application):
 
     # Open input file and register branches with input and output variables
     file_ = ROOT.TFile(args.input, "UPDATE")
-    if file_ is None:
+    if file_ == None:
         raise Exception("File is not existent: {}".format(args.input))
 
     tree = file_.Get(args.tree)
-    if tree is None:
-        raise Exception("Tree {} is not existent in file: {}".format(args.input))
+    if tree == None:
+        raise Exception("Tree {} is not existent in file: {}".format(args.tree, args.input))
 
     for variable in config_training["variables"]:
         tree.SetBranchAddress(variable, values[variable])
