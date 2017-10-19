@@ -25,13 +25,10 @@ def smhtt(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
-            300, init='glorot_normal', activation='relu', input_dim=num_inputs))
-    model.add(
-        Dense(
-            300, init='glorot_normal', activation='relu'))
-    model.add(
-        Dense(
-            300, init='glorot_normal', activation='relu'))
+            300, init='glorot_normal', activation='relu',
+            input_dim=num_inputs))
+    model.add(Dense(300, init='glorot_normal', activation='relu'))
+    model.add(Dense(300, init='glorot_normal', activation='relu'))
     model.add(Dense(num_outputs, init='glorot_uniform', activation='softmax'))
     model.compile(
         loss='categorical_crossentropy',

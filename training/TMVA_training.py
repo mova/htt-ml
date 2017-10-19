@@ -29,7 +29,7 @@ def main(args, config):
     # Set up TMVA DataLoader
     factory = ROOT.TMVA.Factory(
         "TMVAMulticlass",
-        ROOT.TFile.Open("fold{}_training.root".format(args.fold), "RECREATE"),
+        ROOT.TFile.Open(os.path.join(config["datasets"], "fold{}_training.root".format(args.fold)), "RECREATE"),
         "!V:!Silent:Color:!DrawProgressBar:Transformations=None:AnalysisType=multiclass"
     )
     dataloader = ROOT.TMVA.DataLoader(
@@ -73,7 +73,6 @@ def main(args, config):
         "!H:!V:VarTransform=N:FilenameModel=fold{}_model.h5:".format(
             args.fold) + "SaveBestOnly=true:TriesEarlyStopping=5:" +
         "NumEpochs=10000:BatchSize=10000")
-
     """
     factory.BookMethod(
         dataloader, ROOT.TMVA.Types.kBDT, "BDT",
