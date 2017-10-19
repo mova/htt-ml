@@ -29,10 +29,23 @@ The training is performed using `TMVA` so that a rapid evaluation of different m
 For training, we need to extract a training dataset from the Monte Carlo and data files. To do so, run the script `create_training_dataset.py` with the following command line options.
 
 ```bash
-./dataset/create_training_dataset.py /dataset/example_dataset_config.yaml
+./dataset/create_training_dataset.py dataset/example_dataset_config.yaml
 ```
 
 The script creates a two-fold dataset using even and odd event numbers, which are stored separately in `fold*.root` files.
+
+### Set up Keras
+
+Keras is a wrapper for Theano and TensorFlow, which is also available through CVMFS. The following environment variables can be set to control the most important options.
+
+```bash
+# Set the keras backend, either 'theano' or 'tensorflow'
+export KERAS_BACKEND=theano
+# Define the number of cores to be used, works only for theano backend
+export OMP_NUM_THREADS=12
+# This may be needed on SLC6 architectures
+export THEANO_FLAGS=gcc.cxxflags=-march=corei7
+```
 
 ### Run the training
 
@@ -46,19 +59,6 @@ The script `TMVA_training.py` implements a TMVA workflow for training multiclass
 ## Application
 
 For application, we use two approaches. The classification of the analysis ntuples using the `TMVA.Reader` allows for a rapid prototyping and fast results on a small dataset. However, the approach is not suitable for millions of events if the `keras` wrapper of `PyMVA` is used. To run quickly over the full dataset with a `keras` model, we recommend to use the [`lwtnn`](https://www.github.com/lwtnn/lwtnn) package.
-
-### Setup Keras
-
-Keras is a wrapper for Theano and TensorFlow, which is also available through CVMFS. The following environment variables can be set to control the most important options.
-
-```bash
-# Set the keras backend, either 'theano' or 'tensorflow'
-export KERAS_BACKEND=theano
-# Define the number of cores to be used, works only for theano backend
-export OMP_NUM_THREADS=12
-# This may be needed on SLC6 architectures
-export THEANO_FLAGS=gcc.cxxflags=-march=corei7
-```
 
 ### TMVA solution
 

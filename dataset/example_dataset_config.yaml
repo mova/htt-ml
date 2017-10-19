@@ -13,24 +13,31 @@ base_path: .
 # Branch in all files holding the event number used for creating the folds
 event_branch: "event"
 
+# Branch to be added with training weights generated from formula using the weight string
+training_weight_branch: "training_weight"
+
 # Define the processes and the according files
 processes:
     signal:
         files:
             - example_signal.root
         cut_string: "x>0.0"
+        weight_string: "1.0"
 
     background_1:
         files:
             - example_background_1.root
         cut_string: "x>0.0"
+        weight_string: "1.0"
 
     background_2:
         files:
             - example_background_2.root
         cut_string: "x>0.0"
+        weight_string: "1.0"
 
     data:
         files:
             - example_data.root
         cut_string: "x>0.0"
+        weight_string: "1.0"

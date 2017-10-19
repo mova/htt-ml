@@ -17,8 +17,7 @@ def parse_arguments():
         "config_application", help="Path to application config file")
     parser.add_argument(
         "input", help="Path to input file, where response will be added.")
-    parser.add_argument(
-        "tree", help="Path to tree in the ROOT input file")
+    parser.add_argument("tree", help="Path to tree in the ROOT input file")
     return parser.parse_args()
 
 
@@ -49,7 +48,8 @@ def main(args, config_dataset, config_training, config_application):
 
     tree = file_.Get(args.tree)
     if tree == None:
-        raise Exception("Tree {} is not existent in file: {}".format(args.tree, args.input))
+        raise Exception("Tree {} is not existent in file: {}".format(
+            args.tree, args.input))
 
     for variable in config_training["variables"]:
         tree.SetBranchAddress(variable, values[variable])

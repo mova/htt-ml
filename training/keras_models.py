@@ -8,7 +8,9 @@ def example(num_inputs, num_outputs):
     Example Keras model
     """
     model = Sequential()
-    model.add(Dense(10, init='glorot_normal', activation='relu', input_dim=num_inputs))
+    model.add(
+        Dense(
+            10, init='glorot_normal', activation='relu', input_dim=num_inputs))
     model.add(Dense(num_outputs, init='glorot_uniform', activation='softmax'))
     model.compile(
         loss='categorical_crossentropy',

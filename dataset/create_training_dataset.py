@@ -7,6 +7,7 @@ import argparse
 import yaml
 import os
 import subprocess
+from array import array
 
 import logging
 logger = logging.getLogger("create_training_dataset")
@@ -36,6 +37,7 @@ def main(args, config):
         for process in config["processes"]:
             logger.debug("Collect events of process {} for fold {}.".format(
                 process, num_fold))
+
             # Create output file
             created_files.append(
                 os.path.join(config["output_path"],
@@ -52,7 +54,8 @@ def main(args, config):
 
             chain_numentries = chain.GetEntries()
             if not chain_numentries > 0:
-                logger.fatal("Chain (before skimming) does not contain any events.")
+                logger.fatal(
+                    "Chain (before skimming) does not contain any events.")
                 raise Exception
             logger.debug("Found {} events for process {}.".format(
                 chain_numentries, process))
@@ -67,10 +70,26 @@ def main(args, config):
             chain_skimmed = chain.CopyTree(cut_string)
             chain_skimmed_numentries = chain_skimmed.GetEntries()
             if not chain_skimmed_numentries > 0:
-                logger.fatal("Chain (after skimming) does not contain any events.")
+                logger.fatal(
+                    "Chain (after skimming) does not contain any events.")
                 raise Exception
             logger.debug("Found {} events for process {} after skimming.".
                          format(chain_skimmed_numentries, process))
+
+            # Write training weight to new branch
+            logger.debug("Add training weights with weight string: {}".format(
+                config["processes"][process]["weight_string"]))
+            formula = ROOT.TTreeFormula(
+                "training_weight",
+                config["processes"][process]["weight_string"], chain_skimmed)
+            training_weight = array('f', [-999.0])
+            branch_training_weight = chain_skimmed.Branch(
+                config["training_weight_branch"], training_weight,
+                config["training_weight_branch"] + "/F")
+            for i_event in range(chain_skimmed.GetEntries()):
+                chain_skimmed.GetEntry(i_event)
+                training_weight[0] = formula.EvalInstance()
+                branch_training_weight.Fill()
 
             # Rename chain to process name and write to output file
             logger.debug("Write output file for this process and fold.")
