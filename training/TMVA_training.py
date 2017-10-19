@@ -82,8 +82,8 @@ def main(args, config):
 
     # Run training and evaluation
     factory.TrainAllMethods()
-    #factory.TestAllMethods()
-    #factory.EvaluateAllMethods()
+    factory.TestAllMethods()
+    factory.EvaluateAllMethods()
 
 
 if __name__ == "__main__":
