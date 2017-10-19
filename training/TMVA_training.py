@@ -5,6 +5,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument 
 
 import argparse
 import yaml
+import os
 
 import keras_models
 
@@ -31,7 +32,9 @@ def main(args, config):
         ROOT.TFile.Open("fold{}_training.root".format(args.fold), "RECREATE"),
         "!V:!Silent:Color:!DrawProgressBar:Transformations=None:AnalysisType=multiclass"
     )
-    dataloader = ROOT.TMVA.DataLoader("fold{}_training".format(args.fold))
+    dataloader = ROOT.TMVA.DataLoader(
+        os.path.join(config["output_path"], "fold{}_training".format(
+            args.fold)))
 
     # Add variables
     for variable in config["variables"]:
@@ -42,6 +45,8 @@ def main(args, config):
     trees = {}
     for class_ in config["classes"]:
         trees[class_] = input_file.Get(class_)
+        if trees[class_] == None:
+            raise Exception("Tree for class {} does not exist.".format(class_))
         dataloader.AddTree(
             trees[class_], class_,
             config["class_weights"][class_] * config["global_weight_scale"])
@@ -77,8 +82,8 @@ def main(args, config):
 
     # Run training and evaluation
     factory.TrainAllMethods()
-    factory.TestAllMethods()
-    factory.EvaluateAllMethods()
+    #factory.TestAllMethods()
+    #factory.EvaluateAllMethods()
 
 
 if __name__ == "__main__":
