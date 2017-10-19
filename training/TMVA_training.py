@@ -29,7 +29,10 @@ def main(args, config):
     # Set up TMVA DataLoader
     factory = ROOT.TMVA.Factory(
         "TMVAMulticlass",
-        ROOT.TFile.Open(os.path.join(config["datasets"], "fold{}_training.root".format(args.fold)), "RECREATE"),
+        ROOT.TFile.Open(
+            os.path.join(config["datasets"],
+                         "fold{}_training.root".format(args.fold)),
+            "RECREATE"),
         "!V:!Silent:Color:!DrawProgressBar:Transformations=None:AnalysisType=multiclass"
     )
     dataloader = ROOT.TMVA.DataLoader(
