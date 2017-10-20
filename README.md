@@ -22,7 +22,7 @@ The repository comes with a toy dataset, which can be used for testing the train
 
 ## Training
 
-The training is performed using `TMVA` so that a rapid evaluation of different machine learning methods is possible. The preferred methods are neural networks implemented with the `keras` framework, which can be trained using the `PyMVA` interface of `ROOT.TMVA`.
+The training is performed using TMVA or plain Keras. TMVA is used so that a rapid evaluation of different machine learning methods is possible. The preferred methods are neural networks implemented with the `keras` framework, which can be trained using the `PyMVA` interface of `ROOT.TMVA`.
 
 ### Create a training dataset
 
@@ -47,7 +47,7 @@ export OMP_NUM_THREADS=12
 export THEANO_FLAGS=gcc.cxxflags=-march=corei7
 ```
 
-### Run the training
+### TMVA
 
 The script `TMVA_training.py` implements a TMVA workflow for training multiclass machine learning methods on the toy dataset. It displays the training of `keras` models using `PyMVA` and a comparison with the TMVA BDT implementation. The configuration of variables and classes happens in the config file `example_training_config.yaml`. The last command line parameter defines the fold to be trained.
 
@@ -56,11 +56,20 @@ The script `TMVA_training.py` implements a TMVA workflow for training multiclass
 ./training/TMVA_training.py training/example_training_config.yaml 1
 ```
 
+### Plain Keras
+
+The training with plain Keras is performed with almost the same calls than the TMVA training with common configs. For preprocessing, it is used `sklearn.model_selection.preprocessing`, which results are serialized to disk using the Python `pickle` module.
+
+```bash
+./training/keras_training.py training/example_training_config.yaml 0
+./training/keras_training.py training/example_training_config.yaml 1
+```
+
 ## Application
 
 For application, we use two approaches. The classification of the analysis ntuples using the `TMVA.Reader` allows for a rapid prototyping and fast results on a small dataset. However, the approach is not suitable for millions of events if the `keras` wrapper of `PyMVA` is used. To run quickly over the full dataset with a `keras` model, we recommend to use the [`lwtnn`](https://www.github.com/lwtnn/lwtnn) package.
 
-### TMVA solution
+### TMVA
 
 The script `TMVA_application.py` implements the `TMVA.Reader` using the information in the previously used config files. Additionally, the application config points to the to be used classifiers and defines the names of the newly created branches appended to the input tree. The following command shows the usage for the toy dataset.
 
@@ -68,13 +77,26 @@ The script `TMVA_application.py` implements the `TMVA.Reader` using the informat
 ./application/TMVA_application.py \
     dataset/example_dataset_config.yaml \
     training/example_training_config.yaml \
-    application/example_application_config.yaml \
+    application/example_TMVA_application_config.yaml \
     example_data.root \
     ntuple
 ```
 
 Have a look at the toy data file `example_data.root`, which holds new branches with the response of the applied machine learning methods. As discriminating variable in the analysis, it is intended to use the variable `*max_score` with the cut string `*max_index==CLASS_NUMBER`, which selects the desired process.
 
-### `lwtnn` solution
+### Keras
+
+The Keras application script maintains the same arguments than the TMVA based approach. The only difference is the entry `preprocessing` in the application config, which points to the serialized preprocessors. The following command shows the usage for the toy dataset.
+
+```bash
+./application/keras_application.py \
+    dataset/example_dataset_config.yaml \
+    training/example_training_config.yaml \
+    application/example_keras_application_config.yaml \
+    example_data.root \
+    ntuple
+```
+
+### Keras with `lwtnn` as inference engine
 
 TODO

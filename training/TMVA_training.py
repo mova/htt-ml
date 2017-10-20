@@ -30,7 +30,7 @@ def main(args, config):
     factory = ROOT.TMVA.Factory(
         "TMVAMulticlass",
         ROOT.TFile.Open(
-            os.path.join(config["datasets"],
+            os.path.join(config["output_path"],
                          "fold{}_training.root".format(args.fold)),
             "RECREATE"),
         "!V:!Silent:Color:!DrawProgressBar:Transformations=None:AnalysisType=multiclass"
