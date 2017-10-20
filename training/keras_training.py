@@ -97,7 +97,7 @@ def main(args, config):
     # Perform input variable transformation and pickle scaler object
     scaler = preprocessing.StandardScaler().fit(x)
     x = scaler.transform(x)
-    for var, mean, std in zip(variables, scaler.mean_, scaler.std_):
+    for var, mean, std in zip(variables, scaler.mean_, scaler.scale_):
         logger.debug("Preprocessing (variable, mean, std): %s, %s, %s", var,
                      mean, std)
 
