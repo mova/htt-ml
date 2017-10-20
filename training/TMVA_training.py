@@ -64,7 +64,7 @@ def main(args, config):
         ROOT.TCut(""), prepare_classes + "SplitMode=Random:NormMode=None")
 
     # Set up Keras model
-    model = keras_models.smhtt(
+    model = keras_models.example(
         len(config["variables"]), len(config["classes"]))
     model.summary()
     model.save("fold{}_model.h5".format(args.fold))
@@ -74,20 +74,19 @@ def main(args, config):
         dataloader, ROOT.TMVA.Types.kPyKeras,
         "PyKeras_fold{}".format(args.fold),
         "!H:!V:VarTransform=N:FilenameModel=fold{}_model.h5:".format(
-            args.fold) + "SaveBestOnly=true:TriesEarlyStopping=5:" +
-        "NumEpochs=10000:BatchSize=10000")
-    """
+            args.fold) + "SaveBestOnly=true:TriesEarlyStopping=-1:" +
+        "NumEpochs=30:BatchSize=100")
+
     factory.BookMethod(
         dataloader, ROOT.TMVA.Types.kBDT, "BDT",
         "!H:!V:VarTransform=None:NTrees=1500:BoostType=Grad:Shrinkage=0.10:" +
         "UseBaggedBoost:BaggedSampleFraction=0.50:nCuts=50:MaxDepth=3:SeparationType=GiniIndex"
     )
-    """
 
     # Run training and evaluation
     factory.TrainAllMethods()
-    #factory.TestAllMethods()
-    #factory.EvaluateAllMethods()
+    factory.TestAllMethods()
+    factory.EvaluateAllMethods()
 
 
 if __name__ == "__main__":
