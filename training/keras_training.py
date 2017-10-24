@@ -119,7 +119,7 @@ def main(args, config):
         sample_weight=w_train,
         validation_data=(x_test, y_test, w_test),
         batch_size=100,
-        nb_epoch=30,
+        nb_epoch=10,
         shuffle=True)
 
     # Save model
