@@ -31,3 +31,8 @@ variables:
 
 # Split of dataset in training and validation (in TMVA called training and testing)
 train_test_split: 0.75
+
+# Model parameters
+model:
+    batch_size: 100
+    epochs: 10

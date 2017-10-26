@@ -75,7 +75,8 @@ def main(args, config):
         "PyKeras_fold{}".format(args.fold),
         "!H:!V:VarTransform=N:FilenameModel=fold{}_model.h5:".format(
             args.fold) + "SaveBestOnly=true:TriesEarlyStopping=-1:" +
-        "NumEpochs=30:BatchSize=100")
+        "NumEpochs={}:BatchSize={}".format(config["model"]["epochs"],
+                                           config["model"]["batch_size"]))
 
     factory.BookMethod(
         dataloader, ROOT.TMVA.Types.kBDT, "BDT",
