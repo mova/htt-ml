@@ -93,7 +93,7 @@ def main(args, config):
 
             # Rename chain to process name and write to output file
             logger.debug("Write output file for this process and fold.")
-            chain_skimmed.SetName(process)
+            chain_skimmed.SetName(config["processes"][process]["class"])
             chain_skimmed.Write()
             file_.Close()
 

@@ -23,21 +23,25 @@ processes:
             - example_signal.root
         cut_string: "x>0.0"
         weight_string: "1.0"
+        class: signal
 
     background_1:
         files:
             - example_background_1.root
         cut_string: "x>0.0"
         weight_string: "1.0"
+        class: background_1
 
     background_2:
         files:
             - example_background_2.root
         cut_string: "x>0.0"
         weight_string: "1.0"
+        class: background_2
 
     data:
         files:
             - example_data.root
         cut_string: "x>0.0"
         weight_string: "1.0"
+        class: data
