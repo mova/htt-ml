@@ -119,7 +119,7 @@ def main(args, config):
             EarlyStopping(patience=config["model"]["early_stopping"]))
 
     # Train model
-    model = keras_models.example(len(variables), len(classes))
+    model = keras_models.smhtt(len(variables), len(classes))
     model.fit(
         x_train,
         y_train,
