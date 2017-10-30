@@ -13,6 +13,7 @@ import pickle
 
 from sklearn import preprocessing, model_selection
 import keras_models
+from keras.callbacks import EarlyStopping
 
 import logging
 logger = logging.getLogger("keras_training")
@@ -111,6 +112,12 @@ def main(args, config):
     x_train, x_test, y_train, y_test, w_train, w_test = model_selection.train_test_split(
         x, y, w, test_size=1.0 - config["train_test_split"], random_state=1234)
 
+    # Add callbacks
+    callbacks = []
+    if "early_stopping" in config["model"]:
+        callbacks.append(
+            EarlyStopping(patience=config["model"]["early_stopping"]))
+
     # Train model
     model = keras_models.example(len(variables), len(classes))
     model.fit(
@@ -120,7 +127,8 @@ def main(args, config):
         validation_data=(x_test, y_test, w_test),
         batch_size=config["model"]["batch_size"],
         nb_epoch=config["model"]["epochs"],
-        shuffle=True)
+        shuffle=True,
+        callbacks=callbacks)
 
     # Save model
     path_model = os.path.join(config["output_path"],
