@@ -103,8 +103,8 @@ def main(args, config):
                      mean, std)
 
     path_preprocessing = os.path.join(
-        config["output_path"],
-        "fold{}_keras_preprocessing.pickle".format(args.fold))
+        config["output_path"], "fold{}_keras_preprocessing_{}.pickle".format(
+            args.fold, config["model"]["name"]))
     logger.info("Write preprocessing object to %s.", path_preprocessing)
     pickle.dump(scaler, open(path_preprocessing, 'wb'))
 
