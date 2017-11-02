@@ -34,5 +34,6 @@ train_test_split: 0.75
 
 # Model parameters
 model:
+    name: example # Name of model function in keras_models.py
     batch_size: 100
     epochs: 10

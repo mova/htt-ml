@@ -4,8 +4,8 @@
 # NOTE: To be indepedent, the classifier trained on fold 1 needs to be
 # booked first and vice versa.
 classifiers:
-    - fold1_keras_model.h5
-    - fold0_keras_model.h5
+    - fold1_keras_model_example.h5
+    - fold0_keras_model_example.h5
 
 preprocessing:
     - fold1_keras_preprocessing.pickle

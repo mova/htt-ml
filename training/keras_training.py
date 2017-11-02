@@ -119,7 +119,12 @@ def main(args, config):
             EarlyStopping(patience=config["model"]["early_stopping"]))
 
     # Train model
-    model = keras_models.example(len(variables), len(classes))
+    if not hasattr(keras_models, config["model"]["name"]):
+        logger.fatal("Model %s is not implemented.", config["model"]["name"])
+        raise Exception
+
+    model_impl = getattr(keras_models, config["model"]["name"])
+    model = model_impl(len(variables), len(classes))
     model.fit(
         x_train,
         y_train,
@@ -132,7 +137,8 @@ def main(args, config):
 
     # Save model
     path_model = os.path.join(config["output_path"],
-                              "fold{}_keras_model.h5".format(args.fold))
+                              "fold{}_keras_model_{}.h5".format(
+                                  args.fold, config["model"]["name"]))
     logger.info("Write model to %s.", path_model)
     model.save(path_model)
 
