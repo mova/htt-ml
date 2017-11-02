@@ -122,6 +122,7 @@ def main(args, config):
     if not hasattr(keras_models, config["model"]["name"]):
         logger.fatal("Model %s is not implemented.", config["model"]["name"])
         raise Exception
+    logger.info("Train keras model %s.", config["model"]["name"])
 
     model_impl = getattr(keras_models, config["model"]["name"])
     model = model_impl(len(variables), len(classes))
