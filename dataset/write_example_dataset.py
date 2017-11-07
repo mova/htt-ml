@@ -85,6 +85,8 @@ def main(args):
     tree.Branch("y", y, "y/F")
     event = array("f", [-999])
     tree.Branch("event", event, "event/F")
+    weights = array("f", [-999])
+    tree.Branch("weights", weights, "weights/F")
 
     for process in processes:
         covariance_matrix = [[1.0, processes[process]["corr"]],
@@ -99,6 +101,7 @@ def main(args):
             x[0] = value[0]
             y[0] = value[1]
             event[0] = i
+            weights[0] = 1.0
             tree.Fill()
 
     file_.Write()

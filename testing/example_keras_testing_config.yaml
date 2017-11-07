@@ -1,0 +1,18 @@
+# Trained Keras model
+# NOTE: They need to be booked in the correct order! The index (0,1) is
+# matched with the dataset (1,0) so that the testing runs not on the
+# training dataset.
+model:
+    - fold0_keras_model_example.h5
+    - fold1_keras_model_example.h5
+
+# NOTE: Same as for the model files.
+preprocessing:
+    - fold0_keras_preprocessing_example.pickle
+    - fold1_keras_preprocessing_example.pickle
+
+# Event weight branch
+weight_branch: weights
+
+# Prefix of output files
+output_prefix: "confusion_"

@@ -56,13 +56,28 @@ The script `TMVA_training.py` implements a TMVA workflow for training multiclass
 ./training/TMVA_training.py training/example_training_config.yaml 1
 ```
 
-### Plain Keras
+### Keras
 
 The training with plain Keras is performed with almost the same calls than the TMVA training with common configs. For preprocessing, it is used `sklearn.model_selection.preprocessing`, which results are serialized to disk using the Python `pickle` module.
 
 ```bash
 ./training/keras_training.py training/example_training_config.yaml 0
 ./training/keras_training.py training/example_training_config.yaml 1
+```
+
+## Testing
+
+The testing of a multiclass application can be done using confusion matrices. These matrices are filled with event weights respective to the true class and the predicted class. Furthermore, the matrix can be normalized respective to the rows, columns or the principal axis. These representations of the confusion matrix are called the purity and efficiency representations.
+
+### Keras
+
+The following command produces the confusion matrices for the Keras workflow.
+
+```bash
+./testing/keras_confusion_matrix.py \
+    training/example_training_config.yaml testing/example_keras_testing_config.yaml 0
+./testing/keras_confusion_matrix.py \
+    training/example_training_config.yaml testing/example_keras_testing_config.yaml 1
 ```
 
 ## Application

@@ -5,3 +5,4 @@ TMVA/
 *.root
 fold?_*
 *.pickle
+*.png
