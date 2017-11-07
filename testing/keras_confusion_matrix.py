@@ -98,16 +98,17 @@ def print_matrix(p, title):
 
 
 def main(args, config_test, config_train):
-    logger.info("Load preprocessing %s.",
-                config_test["preprocessing"][args.fold])
-    preprocessing = pickle.load(
-        open(config_test["preprocessing"][args.fold], "rb"))
-
-    logger.info("Load keras model %s.", config_test["model"][args.fold])
-    model = load_model(config_test["model"][args.fold])
+    path = os.path.join(config_train["output_path"],
+                        config_test["preprocessing"][args.fold])
+    logger.info("Load preprocessing %s.", path)
+    preprocessing = pickle.load(open(path, "rb"))
 
     path = os.path.join(config_train["output_path"],
-                        config_train["datasets"][(1, 0)[args.fold]])
+                        config_test["model"][args.fold])
+    logger.info("Load keras model %s.", path)
+    model = load_model(path)
+
+    path = os.path.join(config_train["datasets"][(1, 0)[args.fold]])
     logger.info("Loop over test dataset %s to get model response.", path)
     file_ = ROOT.TFile(path)
     confusion = np.zeros(
