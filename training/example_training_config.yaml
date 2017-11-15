@@ -32,6 +32,9 @@ variables:
 # Split of dataset in training and validation (in TMVA called training and testing)
 train_test_split: 0.75
 
+# Preprocessing
+preprocessing: standard_scaler
+
 # Model parameters
 model:
     name: example # Name of model function in keras_models.py

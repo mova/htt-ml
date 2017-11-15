@@ -30,9 +30,8 @@ def main(args, config):
     factory = ROOT.TMVA.Factory(
         "TMVAMulticlass",
         ROOT.TFile.Open(
-            os.path.join(config["output_path"],
-                         "fold{}_training.root".format(args.fold)),
-            "RECREATE"),
+            os.path.join(config["output_path"], "fold{}_training.root".format(
+                args.fold)), "RECREATE"),
         "!V:!Silent:Color:!DrawProgressBar:Transformations=None:AnalysisType=multiclass"
     )
     dataloader = ROOT.TMVA.DataLoader(
@@ -71,8 +70,8 @@ def main(args, config):
 
     # Book MVA methods
     factory.BookMethod(
-        dataloader, ROOT.TMVA.Types.kPyKeras,
-        "PyKeras_fold{}".format(args.fold),
+        dataloader, ROOT.TMVA.Types.kPyKeras, "PyKeras_fold{}".format(
+            args.fold),
         "!H:!V:VarTransform=N:FilenameModel=fold{}_model.h5:".format(
             args.fold) + "SaveBestOnly=true:TriesEarlyStopping=-1:" +
         "NumEpochs={}:BatchSize={}".format(config["model"]["epochs"],

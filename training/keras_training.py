@@ -13,7 +13,7 @@ import pickle
 
 from sklearn import preprocessing, model_selection
 import keras_models
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 
 import logging
 logger = logging.getLogger("keras_training")
@@ -96,11 +96,17 @@ def main(args, config):
     w = np.squeeze(w)  # needed to get weights into keras
 
     # Perform input variable transformation and pickle scaler object
-    scaler = preprocessing.StandardScaler().fit(x)
+    logger.info("Use preprocessing method %s.", config["preprocessing"])
+    if "standard_scaler" in config["preprocessing"]:
+        scaler = preprocessing.StandardScaler().fit(x)
+    elif "quantile_transformer" in config["preprocessing"]:
+        scaler = preprocessing.QuantileTransformer(
+            output_distribution="normal", random_state=1234).fit(x)
+    else:
+        logger.fatal("Preprocessing %s is not implemented.",
+                     config["preprocessing"])
+        raise Exception
     x = scaler.transform(x)
-    for var, mean, std in zip(variables, scaler.mean_, scaler.scale_):
-        logger.debug("Preprocessing (variable, mean, std): %s, %s, %s", var,
-                     mean, std)
 
     path_preprocessing = os.path.join(
         config["output_path"], "fold{}_keras_preprocessing_{}.pickle".format(
@@ -115,8 +121,19 @@ def main(args, config):
     # Add callbacks
     callbacks = []
     if "early_stopping" in config["model"]:
+        logger.info("Stop early after %s tries.",
+                    config["model"]["early_stopping"])
         callbacks.append(
             EarlyStopping(patience=config["model"]["early_stopping"]))
+
+    path_model = os.path.join(config["output_path"],
+                              "fold{}_keras_model_{}.h5".format(
+                                  args.fold, config["model"]["name"]))
+    if "save_best_only" in config["model"]:
+        if config["model"]["save_best_only"]:
+            logger.info("Write best model to %s.", path_model)
+            callbacks.append(
+                ModelCheckpoint(path_model, save_best_only=True, verbose=1))
 
     # Train model
     if not hasattr(keras_models, config["model"]["name"]):
@@ -137,11 +154,9 @@ def main(args, config):
         callbacks=callbacks)
 
     # Save model
-    path_model = os.path.join(config["output_path"],
-                              "fold{}_keras_model_{}.h5".format(
-                                  args.fold, config["model"]["name"]))
-    logger.info("Write model to %s.", path_model)
-    model.save(path_model)
+    if not "save_best_only" in config["model"]:
+        logger.info("Write model to %s.", path_model)
+        model.save(path_model)
 
 
 if __name__ == "__main__":

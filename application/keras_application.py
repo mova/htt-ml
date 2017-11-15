@@ -59,8 +59,9 @@ def main(args, config_dataset, config_training, config_application):
     for class_ in config_training["classes"]:
         response_single_scores.append(array("f", [-999]))
         response_branches.append(
-            tree.Branch("{}{}".format(prefix, class_), response_single_scores[
-                -1], "{}{}/F".format(prefix, class_)))
+            tree.Branch("{}{}".format(prefix, class_),
+                        response_single_scores[-1], "{}{}/F".format(
+                            prefix, class_)))
 
     response_max_score = array("f", [-999])
     response_branches.append(
