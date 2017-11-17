@@ -99,6 +99,8 @@ def main(args, config):
     logger.info("Use preprocessing method %s.", config["preprocessing"])
     if "standard_scaler" in config["preprocessing"]:
         scaler = preprocessing.StandardScaler().fit(x)
+    elif "robust_scaler" in config["preprocessing"]:
+        scaler = preprocessing.RobustScaler().fit(x)
     elif "quantile_transformer" in config["preprocessing"]:
         scaler = preprocessing.QuantileTransformer(
             output_distribution="normal", random_state=1234).fit(x)
