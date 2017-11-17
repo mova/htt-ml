@@ -99,8 +99,14 @@ def main(args, config):
     logger.info("Use preprocessing method %s.", config["preprocessing"])
     if "standard_scaler" in config["preprocessing"]:
         scaler = preprocessing.StandardScaler().fit(x)
+        for var, mean, std in zip(variables, scaler.mean_, scaler.scale_):
+            logger.debug("Preprocessing (variable, mean, std): %s, %s, %s",
+                         var, mean, std)
     elif "robust_scaler" in config["preprocessing"]:
         scaler = preprocessing.RobustScaler().fit(x)
+        for var, mean, std in zip(variables, scaler.center_, scaler.scale_):
+            logger.debug("Preprocessing (variable, mean, std): %s, %s, %s",
+                         var, mean, std)
     elif "quantile_transformer" in config["preprocessing"]:
         scaler = preprocessing.QuantileTransformer(
             output_distribution="normal", random_state=1234).fit(x)
