@@ -107,6 +107,12 @@ def main(args, config):
         for var, mean, std in zip(variables, scaler.center_, scaler.scale_):
             logger.debug("Preprocessing (variable, mean, std): %s, %s, %s",
                          var, mean, std)
+    elif "min_max_scaler" in config["preprocessing"]:
+        scaler = preprocessing.MinMaxScaler(feature_range=(-1.0, 1.0)).fit(x)
+        for var, min_, max_ in zip(variables, scaler.data_min_,
+                                   scaler.data_max_):
+            logger.debug("Preprocessing (variable, min, max): %s, %s, %s", var,
+                         min_, max_)
     elif "quantile_transformer" in config["preprocessing"]:
         scaler = preprocessing.QuantileTransformer(
             output_distribution="normal", random_state=1234).fit(x)
