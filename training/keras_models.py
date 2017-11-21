@@ -22,23 +22,18 @@ def example(num_inputs, num_outputs):
     return model
 
 
-def smhtt(num_inputs, num_outputs):
+def smhtt_simple(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
-            100,
-            init="glorot_normal",
-            activation="tanh",
+            100, init="glorot_normal", activation="tanh",
             input_dim=num_inputs))
     model.add(Dense(num_outputs, init="glorot_uniform", activation="softmax"))
-    model.compile(
-        loss="mean_squared_error",
-        optimizer=Adam(),
-        metrics=[])
+    model.compile(loss="mean_squared_error", optimizer=Adam(), metrics=[])
     return model
 
 
-def smhtt_legacy(num_inputs, num_outputs):
+def smhtt(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
