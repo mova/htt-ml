@@ -155,14 +155,20 @@ def main(args, config):
         raise Exception
     logger.info("Train keras model %s.", config["model"]["name"])
 
+    if config["model"]["batch_size"]<0:
+        batch_size = x_train.shape[0]
+    else:
+        batch_size = config["model"]["batch_size"]
+
     model_impl = getattr(keras_models, config["model"]["name"])
     model = model_impl(len(variables), len(classes))
+    model.summary()
     model.fit(
         x_train,
         y_train,
         sample_weight=w_train,
         validation_data=(x_test, y_test, w_test),
-        batch_size=config["model"]["batch_size"],
+        batch_size=batch_size,
         nb_epoch=config["model"]["epochs"],
         shuffle=True,
         callbacks=callbacks)
