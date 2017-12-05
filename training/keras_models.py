@@ -1,6 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Dense
-from keras.optimizers import Adam
+from keras.optimizers import Adam, Nadam
 from keras.regularizers import l2
 
 
@@ -28,8 +28,8 @@ def smhtt(num_inputs, num_outputs):
         Dense(
             100, init="glorot_normal", activation="tanh",
             input_dim=num_inputs))
-    model.add(Dense(num_outputs, init="glorot_uniform", activation="softmax"))
-    model.compile(loss="mean_squared_error", optimizer=Adam(), metrics=[])
+    model.add(Dense(num_outputs, init="glorot_normal", activation="softmax"))
+    model.compile(loss="mean_squared_error", optimizer=Nadam(), metrics=[])
     return model
 
 
