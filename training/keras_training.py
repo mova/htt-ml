@@ -123,8 +123,8 @@ def main(args, config):
     x = scaler.transform(x)
 
     path_preprocessing = os.path.join(
-        config["output_path"], "fold{}_keras_preprocessing_{}.pickle".format(
-            args.fold, config["model"]["name"]))
+        config["output_path"], "fold{}_keras_preprocessing.pickle".format(
+            args.fold))
     logger.info("Write preprocessing object to %s.", path_preprocessing)
     pickle.dump(scaler, open(path_preprocessing, 'wb'))
 
@@ -141,8 +141,7 @@ def main(args, config):
             EarlyStopping(patience=config["model"]["early_stopping"]))
 
     path_model = os.path.join(config["output_path"],
-                              "fold{}_keras_model_{}.h5".format(
-                                  args.fold, config["model"]["name"]))
+                              "fold{}_keras_model.h5".format(args.fold))
     if "save_best_only" in config["model"]:
         if config["model"]["save_best_only"]:
             logger.info("Write best model to %s.", path_model)
