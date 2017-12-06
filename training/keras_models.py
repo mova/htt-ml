@@ -54,11 +54,13 @@ def smhtt_legacy(num_inputs, num_outputs):
             init="glorot_normal",
             activation="relu",
             W_regularizer=l2(1e-4)))
-    model.add(Dense(num_outputs, init="glorot_uniform", activation="softmax"))
+    model.add(
+        Dense(
+            num_outputs,
+            init="glorot_normal",
+            activation="softmax"))
     model.compile(
         loss="mean_squared_error",
-        optimizer=Adam(),
-        metrics=[
-            "categorical_accuracy",
-        ])
+        optimizer=Nadam(),
+        metrics=[])
     return model
