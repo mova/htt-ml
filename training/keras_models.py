@@ -22,7 +22,7 @@ def example(num_inputs, num_outputs):
     return model
 
 
-def smhtt(num_inputs, num_outputs):
+def smhtt_simple(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
