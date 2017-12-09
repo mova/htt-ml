@@ -73,16 +73,16 @@ def smhtt_tt(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
-            300, init="glorot_normal", activation="tanh",
+            200, init="glorot_normal", activation="tanh",
             W_regularizer=l2(1e-4),
             input_dim=num_inputs))
     model.add(
         Dense(
-            300, init="glorot_normal", activation="tanh",
+            200, init="glorot_normal", activation="tanh",
             W_regularizer=l2(1e-4)))
     model.add(
         Dense(
-            300, init="glorot_normal", activation="tanh",
+            200, init="glorot_normal", activation="tanh",
             W_regularizer=l2(1e-4)))
     model.add(
         Dense(
