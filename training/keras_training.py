@@ -13,7 +13,7 @@ import pickle
 
 from sklearn import preprocessing, model_selection
 import keras_models
-from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.callbacks import *
 
 import logging
 logger = logging.getLogger("keras_training")
@@ -147,6 +147,13 @@ def main(args, config):
             logger.info("Write best model to %s.", path_model)
             callbacks.append(
                 ModelCheckpoint(path_model, save_best_only=True, verbose=1))
+
+    if "reduce_lr_on_plateau" in config["model"]:
+        logger.info("Reduce learning-rate after %s tries.",
+                    config["model"]["reduce_lr_on_plateau"])
+        callbacks.append(
+            ReduceLROnPlateau(
+                patience=config["model"]["reduce_lr_on_plateau"], verbose=1))
 
     # Train model
     if not hasattr(keras_models, config["model"]["name"]):
