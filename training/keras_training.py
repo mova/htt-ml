@@ -102,6 +102,14 @@ def main(args, config):
         for var, mean, std in zip(variables, scaler.mean_, scaler.scale_):
             logger.debug("Preprocessing (variable, mean, std): %s, %s, %s",
                          var, mean, std)
+    elif "identity" in config["preprocessing"]:
+        scaler = preprocessing.StandardScaler().fit(x)
+        for i in range(len(scaler.mean_)):
+            scaler.mean_[i] = 0.0
+            scaler.scale_[i] = 1.0
+        for var, mean, std in zip(variables, scaler.mean_, scaler.scale_):
+            logger.debug("Preprocessing (variable, mean, std): %s, %s, %s",
+                         var, mean, std)
     elif "robust_scaler" in config["preprocessing"]:
         scaler = preprocessing.RobustScaler().fit(x)
         for var, mean, std in zip(variables, scaler.center_, scaler.scale_):
