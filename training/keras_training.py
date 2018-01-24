@@ -1,22 +1,12 @@
 #!/usr/bin/env python
 
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
-import root_numpy
-import numpy as np
-np.random.seed(1234)
+import logging
+logger = logging.getLogger("keras_training")
 
 import argparse
 import yaml
 import os
 import pickle
-
-from sklearn import preprocessing, model_selection
-import keras_models
-from keras.callbacks import *
-
-import logging
-logger = logging.getLogger("keras_training")
 
 
 def parse_arguments():
@@ -25,6 +15,13 @@ def parse_arguments():
         description="Train machine Keras models for Htt analyses")
     parser.add_argument("config", help="Path to training config file")
     parser.add_argument("fold", type=int, help="Select the fold to be trained")
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=1234,
+        help=
+        "Random seed used for initialization of parameters and training procedure."
+    )
     return parser.parse_args()
 
 
@@ -48,6 +45,20 @@ def setup_logging(level, output_file=None):
 
 
 def main(args, config):
+    # Set seed and import packages
+    # NOTE: This need to be done before any keras module is imported!
+    logger.debug("Import packages and set random seed to %s.", args.seed)
+    import numpy as np
+    np.random.seed(args.seed)
+
+    import ROOT
+    ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
+    import root_numpy
+
+    from sklearn import preprocessing, model_selection
+    import keras_models
+    from keras.callbacks import *
+
     # Extract list of variables
     variables = config["variables"]
     logger.debug("Use variables:")
