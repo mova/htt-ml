@@ -40,9 +40,10 @@ def setup_logging(level, output_file=None):
 def main(args, config):
     # Set seed and import packages
     # NOTE: This need to be done before any keras module is imported!
-    logger.debug("Import packages and set random seed to %s.", config["seed"])
+    logger.debug("Import packages and set random seed to %s.",
+                 int(config["seed"]))
     import numpy as np
-    np.random.seed(config["seed"])
+    np.random.seed(int(config["seed"]))
 
     import ROOT
     ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
@@ -127,7 +128,8 @@ def main(args, config):
                          min_, max_)
     elif "quantile_transformer" in config["preprocessing"]:
         scaler = preprocessing.QuantileTransformer(
-            output_distribution="normal", random_state=config["seed"]).fit(x)
+            output_distribution="normal",
+            random_state=int(config["seed"])).fit(x)
     else:
         logger.fatal("Preprocessing %s is not implemented.",
                      config["preprocessing"])
@@ -146,7 +148,7 @@ def main(args, config):
         y,
         w,
         test_size=1.0 - config["train_test_split"],
-        random_state=config["seed"])
+        random_state=int(config["seed"]))
 
     # Add callbacks
     callbacks = []
