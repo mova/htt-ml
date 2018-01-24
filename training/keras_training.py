@@ -57,7 +57,7 @@ def main(args, config):
 
     from sklearn import preprocessing, model_selection
     import keras_models
-    from keras.callbacks import *
+    from keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCheckpoint
 
     # Extract list of variables
     variables = config["variables"]
