@@ -1,6 +1,6 @@
 from keras.models import Sequential
-from keras.layers import Dense, Dropout
-from keras.optimizers import Adam, Nadam
+from keras.layers import *
+from keras.optimizers import *
 from keras.regularizers import l2
 
 
@@ -37,20 +37,24 @@ def smhtt_mt(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
-            300, init="glorot_normal", activation="tanh",
+            300,
+            init="glorot_normal",
+            activation="tanh",
             W_regularizer=l2(1e-4),
             input_dim=num_inputs))
     model.add(
         Dense(
-            300, init="glorot_normal", activation="tanh",
+            300,
+            init="glorot_normal",
+            activation="tanh",
             W_regularizer=l2(1e-4)))
     model.add(
         Dense(
-            300, init="glorot_normal", activation="tanh",
+            300,
+            init="glorot_normal",
+            activation="tanh",
             W_regularizer=l2(1e-4)))
-    model.add(
-        Dense(
-            num_outputs, init="glorot_normal", activation="softmax"))
+    model.add(Dense(num_outputs, init="glorot_normal", activation="softmax"))
     model.compile(loss="mean_squared_error", optimizer=Nadam(), metrics=[])
     return model
 
@@ -59,12 +63,12 @@ def smhtt_et(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
-            1000, init="glorot_normal", activation="tanh",
+            1000,
+            init="glorot_normal",
+            activation="tanh",
             W_regularizer=l2(1e-4),
             input_dim=num_inputs))
-    model.add(
-        Dense(
-            num_outputs, init="glorot_normal", activation="softmax"))
+    model.add(Dense(num_outputs, init="glorot_normal", activation="softmax"))
     model.compile(loss="mean_squared_error", optimizer=Nadam(), metrics=[])
     return model
 
@@ -73,20 +77,24 @@ def smhtt_tt(num_inputs, num_outputs):
     model = Sequential()
     model.add(
         Dense(
-            200, init="glorot_normal", activation="tanh",
+            200,
+            init="glorot_normal",
+            activation="tanh",
             W_regularizer=l2(1e-4),
             input_dim=num_inputs))
     model.add(
         Dense(
-            200, init="glorot_normal", activation="tanh",
+            200,
+            init="glorot_normal",
+            activation="tanh",
             W_regularizer=l2(1e-4)))
     model.add(
         Dense(
-            200, init="glorot_normal", activation="tanh",
+            200,
+            init="glorot_normal",
+            activation="tanh",
             W_regularizer=l2(1e-4)))
-    model.add(
-        Dense(
-            num_outputs, init="glorot_normal", activation="softmax"))
+    model.add(Dense(num_outputs, init="glorot_normal", activation="softmax"))
     model.compile(loss="mean_squared_error", optimizer=Nadam(), metrics=[])
     return model
 
@@ -112,13 +120,24 @@ def smhtt_legacy(num_inputs, num_outputs):
             init="glorot_normal",
             activation="relu",
             W_regularizer=l2(1e-4)))
-    model.add(
-        Dense(
-            num_outputs,
-            init="glorot_normal",
-            activation="softmax"))
-    model.compile(
-        loss="mean_squared_error",
-        optimizer=Adam(),
-        metrics=[])
+    model.add(Dense(num_outputs, init="glorot_normal", activation="softmax"))
+    model.compile(loss="mean_squared_error", optimizer=Adam(), metrics=[])
+    return model
+
+
+def smhtt_dropout(num_inputs, num_outputs):
+    model = Sequential()
+
+    for i, nodes in enumerate([200] * 2):
+        if i == 0:
+            model.add(Dense(nodes, input_dim=num_inputs))
+        else:
+            model.add(Dense(nodes))
+        model.add(Activation("relu"))
+        model.add(Dropout(0.5))
+
+    model.add(Dense(num_outputs))
+    model.add(Activation("softmax"))
+
+    model.compile(loss="mean_squared_error", optimizer=Nadam())
     return model
