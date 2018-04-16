@@ -38,6 +38,11 @@ def parse_arguments():
     parser.add_argument("config_training", help="Path to training config file")
     parser.add_argument("config_testing", help="Path to testing config file")
     parser.add_argument("fold", type=int, help="Trained model to be tested.")
+    parser.add_argument(
+        "--normalize",
+        action="store_true",
+        default=False,
+        help="Normalize rows.")
     return parser.parse_args()
 
 
@@ -153,21 +158,27 @@ def main(args, config_test, config_train):
 
         mean_abs_deriv[class_] = np.mean(np.abs(deriv_class), axis=0)
 
-    # Plotting
+    # Normalize rows
     classes = config_train["classes"]
+    matrix = np.vstack([mean_abs_deriv[class_] for class_ in classes])
+    if args.normalize:
+        for i_class, class_ in enumerate(classes):
+            matrix[i_class, :] = matrix[i_class, :] / np.sum(
+                matrix[i_class, :])
+
+    # Plotting
     variables = config_train["variables"]
     plt.figure(0, figsize=(len(variables), len(classes)))
     axis = plt.gca()
-    matrix = np.vstack([mean_abs_deriv[class_] for class_ in classes]).T
     for i in range(matrix.shape[0]):
         for j in range(matrix.shape[1]):
             axis.text(
-                i + 0.5,
                 j + 0.5,
+                i + 0.5,
                 '{:.2f}'.format(matrix[i, j]),
                 ha='center',
                 va='center')
-    q = plt.pcolormesh(matrix.T, cmap='Wistia')
+    q = plt.pcolormesh(matrix, cmap='Wistia')
     #cbar = plt.colorbar(q)
     #cbar.set_label("mean(abs(Taylor coefficients))", rotation=270, labelpad=20)
     plt.xticks(
