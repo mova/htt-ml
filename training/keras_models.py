@@ -1,7 +1,8 @@
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import *
 from keras.optimizers import *
 from keras.regularizers import l2
+import numpy as np
 
 
 def example(num_inputs, num_outputs):
@@ -141,3 +142,41 @@ def smhtt_dropout(num_inputs, num_outputs):
 
     model.compile(loss="mean_squared_error", optimizer=Nadam())
     return model
+
+def smhtt_dropout_tanh(num_inputs, num_outputs):
+    model = Sequential()
+
+    for i, nodes in enumerate([200] * 2):
+        if i == 0:
+            model.add(Dense(nodes, input_dim=num_inputs))
+        else:
+            model.add(Dense(nodes))
+        model.add(Activation("tanh"))
+        model.add(Dropout(0.5))
+
+    model.add(Dense(num_outputs))
+    model.add(Activation("softmax"))
+
+    model.compile(loss="mean_squared_error", optimizer="adam")
+    return model
+
+def smhtt_dropout_tanh_tensorflow(input_placeholder, keras_model):
+    weights = {}
+    for layer in keras_model.layers:
+        print("Layer: {}".format(layer.name))
+        for weight, array in zip(layer.weights, layer.get_weights()):
+            print("    weight, shape: {}, {}".format(weight.name,
+                    np.array(array).shape))
+            weights[weight.name] = np.array(array)
+
+    w1 = tf.get_variable('w1', initializer=weights['dense_1/kernel:0'])
+    b1 = tf.get_variable('b1', initializer=weights['dense_1/bias:0'])
+    w2 = tf.get_variable('w2', initializer=weights['dense_2/kernel:0'])
+    b2 = tf.get_variable('b2', initializer=weights['dense_2/bias:0'])
+    w3 = tf.get_variable('w3', initializer=weights['dense_3/kernel:0'])
+    b3 = tf.get_variable('b3', initializer=weights['dense_3/bias:0'])
+
+    l1 = tf.tanh(tf.add(b1, tf.matmul(input_placeholder, w1)))
+    l2 = tf.tanh(tf.add(b2, tf.matmul(l1, w2)))
+    l3 = tf.nn.softmax(tf.add(b3, tf.matmul(l2, w3)))
+    return l3
