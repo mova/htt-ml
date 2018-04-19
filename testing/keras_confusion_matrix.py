@@ -121,10 +121,22 @@ def main(args, config_test, config_train):
         if tree == None:
             logger.fatal("Tree %s does not exist.", class_)
             raise Exception
+
         values = []
         for variable in config_train["variables"]:
-            values.append(array("f", [-999]))
+            typename = tree.GetLeaf(variable).GetTypeName()
+            if  typename == "Float_t":
+                values.append(array("f", [-999]))
+            elif typename == "Int_t":
+                values.append(array("i", [-999]))
+            else:
+                logger.fatal("Variable {} has unknown type {}.".format(variable, typename))
+                raise Exception
             tree.SetBranchAddress(variable, values[-1])
+
+        if tree.GetLeaf(variable).GetTypeName() != "Float_t":
+            logger.fatal("Weight branch has unkown type.")
+            raise Exception
         weight = array("f", [-999])
         tree.SetBranchAddress(config_test["weight_branch"], weight)
 

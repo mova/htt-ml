@@ -44,6 +44,8 @@ def parse_config(filename):
 
 
 def main(args, config_test, config_train):
+    logger.fatal("DEPRECATED")
+    raise Exception
     path = os.path.join(config_train["output_path"],
                         config_test["preprocessing"][args.fold])
     logger.info("Load preprocessing %s.", path)

@@ -30,6 +30,9 @@ def parse_config(filename):
 
 
 def main(args, config_dataset, config_training, config_application):
+    logger.fatal("DEPRECATED")
+    raise Exception
+
     # Load keras model and preprocessing
     classifiers = []
     preprocessing = []

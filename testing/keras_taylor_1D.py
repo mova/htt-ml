@@ -39,6 +39,11 @@ def parse_arguments():
     parser.add_argument("config_testing", help="Path to testing config file")
     parser.add_argument("fold", type=int, help="Trained model to be tested.")
     parser.add_argument(
+        "--no-abs",
+        action="store_true",
+        default=False,
+        help="Do not use abs for metric.")
+    parser.add_argument(
         "--normalize",
         action="store_true",
         default=False,
@@ -109,15 +114,28 @@ def main(args, config_test, config_train):
         if tree == None:
             logger.fatal("Tree %s does not exist.", class_)
             raise Exception
+
         values = []
         for variable in config_train["variables"]:
-            values.append(array("f", [-999]))
+            typename = tree.GetLeaf(variable).GetTypeName()
+            if  typename == "Float_t":
+                values.append(array("f", [-999]))
+            elif typename == "Int_t":
+                values.append(array("i", [-999]))
+            else:
+                logger.fatal("Variable {} has unknown type {}.".format(variable, typename))
+                raise Exception
             tree.SetBranchAddress(variable, values[-1])
+
+        if tree.GetLeaf(variable).GetTypeName() != "Float_t":
+            logger.fatal("Weight branch has unkown type.")
+            raise Exception
         weight = array("f", [-999])
         tree.SetBranchAddress(config_test["weight_branch"], weight)
 
         deriv_class = np.zeros((tree.GetEntries(),
                                 len(config_train["variables"])))
+        weights = np.zeros((tree.GetEntries()))
 
         for i_event in range(tree.GetEntries()):
             tree.GetEntry(i_event)
@@ -156,7 +174,13 @@ def main(args, config_test, config_train):
             deriv_values = np.squeeze(deriv_values)
             deriv_class[i_event, :] = deriv_values
 
-        mean_abs_deriv[class_] = np.mean(np.abs(deriv_class), axis=0)
+            # Store weight
+            weights[i_event] = weight[0]
+
+        if args.no_abs:
+            mean_abs_deriv[class_] = np.average((deriv_class), weights=weights, axis=0)
+        else:
+            mean_abs_deriv[class_] = np.average(np.abs(deriv_class), weights=weights, axis=0)
 
     # Normalize rows
     classes = config_train["classes"]

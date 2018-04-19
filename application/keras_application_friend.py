@@ -51,7 +51,14 @@ def main(args, config_dataset, config_training, config_application):
 
     values = []
     for variable in config_training["variables"]:
-        values.append(array("f", [-999]))
+        typename = tree_input.GetLeaf(variable).GetTypeName()
+        if  typename == "Float_t":
+            values.append(array("f", [-999]))
+        elif typename == "Int_t":
+            values.append(array("i", [-999]))
+        else:
+            logger.fatal("Variable {} has unknown type {}.".format(variable, typename))
+            raise Exception
         tree_input.SetBranchAddress(variable, values[-1])
 
     # Open output file and register branches with output variables
