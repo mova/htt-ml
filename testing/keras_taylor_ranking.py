@@ -115,7 +115,6 @@ def main(args, config_test, config_train):
     logger.info("Loop over test dataset %s to get model response.", path)
     file_ = ROOT.TFile(path)
     mean_abs_deriv = {}
-    classes = ["qqh"]  # DEBUG
     for i_class, class_ in enumerate(classes):
         logger.debug("Process class %s.", class_)
 
