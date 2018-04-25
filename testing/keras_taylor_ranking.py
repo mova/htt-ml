@@ -65,7 +65,8 @@ def main(args, config_test, config_train):
     model_keras = load_model(path)
 
     # Get TensorFlow graph
-    inputs = Inputs(config_train["variables"])
+    variables = config_train["variables"]
+    inputs = Inputs(variables)
 
     try:
         sys.path.append("htt-ml/training")
@@ -92,29 +93,26 @@ def main(args, config_test, config_train):
 
     # Get operations for first-order and second-order derivatives
     logger.debug("Set up derivative operations.")
-    deriv_ops = {}
-    deriv_ops_names = {}
+    deriv_ops_names = []
+    for variable in variables:
+        deriv_ops_names.append([variable])
+    for i, i_var in enumerate(variables):
+        for j, j_var in enumerate(variables):
+            deriv_ops_names.append([i_var, j_var])
+
     derivatives = Derivatives(inputs, outputs)
+    deriv_ops = {}
     for class_ in classes:
         deriv_ops[class_] = []
-        deriv_ops_names[class_] = []
-        for variable in config_train["variables"]:
-            deriv_ops[class_].append(derivatives.get(class_, [variable]))
-            deriv_ops_names[class_].append([variable])
-
-        for i, i_var in enumerate(config_train["variables"]):
-            for j, j_var in enumerate(config_train["variables"]):
-                if j < i:
-                    continue
-                deriv_ops[class_].append(
-                    derivatives.get(class_, [i_var, j_var]))
-                deriv_ops_names[class_].append([i_var, j_var])
+        for names in deriv_ops_names:
+            deriv_ops[class_].append(derivatives.get(class_, names))
 
     # Loop over testing dataset
     path = os.path.join(config_train["datasets"][(1, 0)[args.fold]])
     logger.info("Loop over test dataset %s to get model response.", path)
     file_ = ROOT.TFile(path)
-    mean_abs_deriv = {}
+    deriv_class = {}
+    weights = {}
     for i_class, class_ in enumerate(classes):
         logger.debug("Process class %s.", class_)
 
@@ -124,7 +122,7 @@ def main(args, config_test, config_train):
             raise Exception
 
         values = []
-        for variable in config_train["variables"]:
+        for variable in variables:
             typename = tree.GetLeaf(variable).GetTypeName()
             if typename == "Float_t":
                 values.append(array("f", [-999]))
@@ -142,9 +140,9 @@ def main(args, config_test, config_train):
         weight = array("f", [-999])
         tree.SetBranchAddress(config_test["weight_branch"], weight)
 
-        deriv_class = np.zeros((tree.GetEntries(),
-                                len(deriv_ops_names[class_])))
-        weights = np.zeros((tree.GetEntries()))
+        deriv_class[class_] = np.zeros((tree.GetEntries(),
+                                        len(deriv_ops_names)))
+        weights[class_] = np.zeros((tree.GetEntries()))
 
         for i_event in range(tree.GetEntries()):
             tree.GetEntry(i_event)
@@ -181,26 +179,48 @@ def main(args, config_test, config_train):
                     inputs.placeholders: values_preprocessed
                 })
             deriv_values = np.squeeze(deriv_values)
-            deriv_class[i_event, :] = deriv_values
+            deriv_class[class_][i_event, :] = deriv_values
 
             # Store weight
-            weights[i_event] = weight[0]
+            weights[class_][i_event] = weight[0]
 
+    # Calculate taylor coefficients
+    mean_abs_deriv = {}
+    for class_ in classes:
         if args.no_abs:
             mean_abs_deriv[class_] = np.average(
-                (deriv_class), weights=weights, axis=0)
+                (deriv_class[class_]), weights=weights[class_], axis=0)
         else:
             mean_abs_deriv[class_] = np.average(
-                np.abs(deriv_class), weights=weights, axis=0)
+                np.abs(deriv_class[class_]), weights=weights[class_], axis=0)
+
+    deriv_all = np.vstack([deriv_class[class_] for class_ in classes])
+    weights_all = np.hstack([weights[class_] for class_ in classes])
+    if args.no_abs:
+        mean_abs_deriv_all = np.average(
+            (deriv_all), weights=weights_all, axis=0)
+    else:
+        mean_abs_deriv_all = np.average(
+            np.abs(deriv_all), weights=weights_all, axis=0)
+    mean_abs_deriv["all"] = mean_abs_deriv_all
+
+    # Store results for combined metric in file
+    output_yaml = []
+    for names, score in zip(deriv_ops_names, mean_abs_deriv_all):
+        output_yaml.append({"variables": names, "score": float(score)})
+    output_path = os.path.join(config_train["output_path"],
+                               "fold{}_keras_taylor_ranking.yaml".format(
+                                   args.fold))
+    yaml.dump(output_yaml, open(output_path, "w"), default_flow_style=False)
+    logger.info("Save results to {}.".format(output_path))
 
     # Get ranking
     ranking = {}
     labels = {}
-    for class_ in classes:
+    for class_ in classes + ["all"]:
         labels_tmp = []
         ranking_tmp = []
-        for names, value in zip(deriv_ops_names[class_],
-                                mean_abs_deriv[class_]):
+        for names, value in zip(deriv_ops_names, mean_abs_deriv[class_]):
             labels_tmp.append(", ".join(names))
             if len(names) == 2:
                 if names[0] == names[1]:
@@ -219,7 +239,7 @@ def main(args, config_test, config_train):
         labels[class_] = labels_tmp
 
     # Write table
-    for class_ in classes:
+    for class_ in classes + ["all"]:
         output_path = os.path.join(config_train["output_path"],
                                    "fold{}_keras_taylor_ranking_{}.txt".format(
                                        args.fold, class_))
@@ -230,7 +250,7 @@ def main(args, config_test, config_train):
             f.write("{0:<4} : {1:<60} : {2:g}\n".format(rank, label, score))
 
     # Plotting
-    for class_ in classes:
+    for class_ in classes + ["all"]:
         plt.figure(figsize=(7, 4))
         ranks_1d = []
         ranks_2d = []
@@ -264,9 +284,6 @@ def main(args, config_test, config_train):
             alpha=1.0)
         plt.xlabel("Rank")
         plt.ylabel("$\\langle t_{i} \\rangle$")
-        #plt.xticks([100, 200, 300, 400])
-        #plt.yticks([0.000, 0.001, 0.002, 0.003])
-        #plt.legend(loc=3, bbox_to_anchor=(0.0, 1.00, 1.0, 0.00))
         plt.legend()
         output_path = os.path.join(config_train["output_path"],
                                    "fold{}_keras_taylor_ranking_{}.png".format(
