@@ -98,6 +98,8 @@ def main(args, config_test, config_train):
         deriv_ops_names.append([variable])
     for i, i_var in enumerate(variables):
         for j, j_var in enumerate(variables):
+            if j < i:
+                continue
             deriv_ops_names.append([i_var, j_var])
 
     derivatives = Derivatives(inputs, outputs)
@@ -204,16 +206,6 @@ def main(args, config_test, config_train):
             np.abs(deriv_all), weights=weights_all, axis=0)
     mean_abs_deriv["all"] = mean_abs_deriv_all
 
-    # Store results for combined metric in file
-    output_yaml = []
-    for names, score in zip(deriv_ops_names, mean_abs_deriv_all):
-        output_yaml.append({"variables": names, "score": float(score)})
-    output_path = os.path.join(config_train["output_path"],
-                               "fold{}_keras_taylor_ranking.yaml".format(
-                                   args.fold))
-    yaml.dump(output_yaml, open(output_path, "w"), default_flow_style=False)
-    logger.info("Save results to {}.".format(output_path))
-
     # Get ranking
     ranking = {}
     labels = {}
@@ -248,6 +240,19 @@ def main(args, config_test, config_train):
         for rank, (label, score) in enumerate(
                 zip(labels[class_], ranking[class_])):
             f.write("{0:<4} : {1:<60} : {2:g}\n".format(rank, label, score))
+
+    # Store results for combined metric in file
+    output_yaml = []
+    for names, score in zip(labels["all"], ranking["all"]):
+        output_yaml.append({
+            "variables": names.split(", "),
+            "score": float(score)
+        })
+    output_path = os.path.join(config_train["output_path"],
+                               "fold{}_keras_taylor_ranking.yaml".format(
+                                   args.fold))
+    yaml.dump(output_yaml, open(output_path, "w"), default_flow_style=False)
+    logger.info("Save results to {}.".format(output_path))
 
     # Plotting
     for class_ in classes + ["all"]:
