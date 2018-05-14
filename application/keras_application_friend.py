@@ -2,6 +2,7 @@
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import argparse
 from array import array
