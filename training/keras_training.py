@@ -85,8 +85,8 @@ def main(args, config):
         w_class = np.zeros((tree.GetEntries(), 1))
         w_conv = root_numpy.tree2array(
             tree, branches=[config["event_weights"]])
-        w_class[:, 0] = w_conv[config["event_weights"]] * config[
-            "class_weights"][class_]
+        w_class[:,
+                0] = w_conv[config["event_weights"]] * config["class_weights"][class_]
         w.append(w_class)
 
         # Get targets for this class
@@ -137,8 +137,8 @@ def main(args, config):
     x = scaler.transform(x)
 
     path_preprocessing = os.path.join(
-        config["output_path"], "fold{}_keras_preprocessing.pickle".format(
-            args.fold))
+        config["output_path"],
+        "fold{}_keras_preprocessing.pickle".format(args.fold))
     logger.info("Write preprocessing object to %s.", path_preprocessing)
     pickle.dump(scaler, open(path_preprocessing, 'wb'))
 
@@ -187,7 +187,7 @@ def main(args, config):
     model_impl = getattr(keras_models, config["model"]["name"])
     model = model_impl(len(variables), len(classes))
     model.summary()
-    model.fit(
+    history = model.fit(
         x_train,
         y_train,
         sample_weight=w_train,
@@ -196,6 +196,22 @@ def main(args, config):
         nb_epoch=config["model"]["epochs"],
         shuffle=True,
         callbacks=callbacks)
+
+    # Plot loss
+    # NOTE: Matplotlib needs to be imported after Keras/TensorFlow because of conflicting libraries
+    import matplotlib as mpl
+    mpl.use('Agg')
+    import matplotlib.pyplot as plt
+
+    epochs = range(1, len(history.history["loss"]) + 1)
+    plt.plot(epochs, history.history["loss"], lw=3, label="Training loss")
+    plt.plot(
+        epochs, history.history["val_loss"], lw=3, label="Validation loss")
+    plt.xlabel("Epoch"), plt.ylabel("Loss")
+    path_plot = os.path.join(config["output_path"],
+                             "fold{}_loss.png".format(args.fold))
+    plt.legend()
+    plt.savefig(path_plot, bbox_inches="tight")
 
     # Save model
     if not "save_best_only" in config["model"]:
