@@ -151,7 +151,7 @@ def smhtt_dropout_tanh(num_inputs, num_outputs):
         if i == 0:
             model.add(Dense(nodes, kernel_regularizer=l2(1e-5), input_dim=num_inputs))
         else:
-            model.add(Dense(nodes))
+            model.add(Dense(nodes, kernel_regularizer=l2(1e-5)))
         model.add(Activation("tanh"))
         model.add(Dropout(0.3))
 
