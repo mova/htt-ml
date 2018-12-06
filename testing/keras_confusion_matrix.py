@@ -60,7 +60,7 @@ def get_purity_representations(m):
     return ma, mb
 
 
-def plot_confusion(confusion, classes, filename, markup='{:.2f}'):
+def plot_confusion(confusion, classes, filename, label, markup='{:.2f}'):
     logger.debug("Write plot to %s.", filename)
     plt.figure(figsize=(2.5 * confusion.shape[0], 2.0 * confusion.shape[1]))
     axis = plt.gca()
@@ -69,12 +69,12 @@ def plot_confusion(confusion, classes, filename, markup='{:.2f}'):
             axis.text(
                 i + 0.5,
                 j + 0.5,
-                markup.format(confusion[-1 - j, i]),
+                markup.format(confusion[i, -1 - j]),
                 ha='center',
                 va='center')
-    q = plt.pcolormesh(confusion[::-1], cmap='Wistia')
+    q = plt.pcolormesh(np.transpose(confusion)[::-1], cmap='Wistia')
     cbar = plt.colorbar(q)
-    cbar.set_label("Sum of event weights", rotation=270, labelpad=50)
+    cbar.set_label(label, rotation=270, labelpad=50)
     plt.xticks(
         np.array(range(len(classes))) + 0.5, classes, rotation='vertical')
     plt.yticks(
@@ -83,9 +83,10 @@ def plot_confusion(confusion, classes, filename, markup='{:.2f}'):
         rotation='horizontal')
     plt.xlim(0, len(classes))
     plt.ylim(0, len(classes))
-    plt.ylabel('True class')
-    plt.xlabel('Predicted class')
-    plt.savefig(filename, bbox_inches='tight')
+    plt.ylabel('Predicted class')
+    plt.xlabel('True class')
+    plt.savefig(filename+".png", bbox_inches='tight')
+    plt.savefig(filename+".pdf", bbox_inches='tight')
 
 
 def print_matrix(p, title):
@@ -149,26 +150,31 @@ def main(args, config_test, config_train):
             max_index = np.argmax(response)
             confusion[i_class, max_index] += weight[0]
 
-    logger.info("Write confusion matrices.")
+    # Debug output to ensure that plotting is correct
+    for i_class, class_ in enumerate(config_train["classes"]):
+        logger.debug("True class: {}".format(class_))
+        for j_class, class2 in enumerate(config_train["classes"]):
+            logger.debug("Predicted {}: {}".format(class2, confusion[i_class, j_class]))
 
-    # Standard confusion matrix
+    # Plot confusion matrix
+    logger.info("Write confusion matrices.")
     path_template = os.path.join(config_train["output_path"],
-                                 "fold{}_keras_confusion_{}.png")
+                                 "fold{}_keras_confusion_{}")
 
     plot_confusion(confusion, config_train["classes"],
-                   path_template.format(args.fold, "standard"))
+                   path_template.format(args.fold, "standard"), "Sum of event weights")
 
     confusion_eff1, confusion_eff2 = get_efficiency_representations(confusion)
     plot_confusion(confusion_eff1, config_train["classes"],
-                   path_template.format(args.fold, "efficiency1"))
+                   path_template.format(args.fold, "efficiency1"), "Efficiency")
     plot_confusion(confusion_eff2, config_train["classes"],
-                   path_template.format(args.fold, "efficiency2"))
+                   path_template.format(args.fold, "efficiency2"), "Efficiency")
 
     confusion_pur1, confusion_pur2 = get_purity_representations(confusion)
     plot_confusion(confusion_pur1, config_train["classes"],
-                   path_template.format(args.fold, "purity1"))
+                   path_template.format(args.fold, "purity1"), "Purity")
     plot_confusion(confusion_pur2, config_train["classes"],
-                   path_template.format(args.fold, "purity2"))
+                   path_template.format(args.fold, "purity2"), "Purity")
 
 
 if __name__ == "__main__":

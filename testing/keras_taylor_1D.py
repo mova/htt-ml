@@ -212,9 +212,10 @@ def main(args, config_test, config_train):
     plt.xlim(0, len(config_train["variables"]))
     plt.ylim(0, len(config_train["classes"]))
     output_path = os.path.join(config_train["output_path"],
-                               "fold{}_keras_taylor_1D.png".format(args.fold))
+                               "fold{}_keras_taylor_1D".format(args.fold))
     logger.info("Save plot to {}.".format(output_path))
-    plt.savefig(output_path, bbox_inches='tight')
+    plt.savefig(output_path+".png", bbox_inches='tight')
+    plt.savefig(output_path+".pdf", bbox_inches='tight')
 
 
 if __name__ == "__main__":
