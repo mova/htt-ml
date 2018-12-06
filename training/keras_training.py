@@ -209,9 +209,10 @@ def main(args, config):
         epochs, history.history["val_loss"], lw=3, label="Validation loss")
     plt.xlabel("Epoch"), plt.ylabel("Loss")
     path_plot = os.path.join(config["output_path"],
-                             "fold{}_loss.png".format(args.fold))
+                             "fold{}_loss".format(args.fold))
     plt.legend()
-    plt.savefig(path_plot, bbox_inches="tight")
+    plt.savefig(path_plot+".png", bbox_inches="tight")
+    plt.savefig(path_plot+".pdf", bbox_inches="tight")
 
     # Save model
     if not "save_best_only" in config["model"]:
