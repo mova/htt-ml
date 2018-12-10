@@ -115,6 +115,10 @@ def main(args, config_test, config_train):
     confusion = np.zeros(
         (len(config_train["classes"]), len(config_train["classes"])),
         dtype=np.float)
+    confusion2 = np.zeros(
+        (len(config_train["classes"]), len(config_train["classes"])),
+        dtype=np.float)
+    class_weights = config_train["class_weights"]
     for i_class, class_ in enumerate(config_train["classes"]):
         logger.debug("Process class %s.", class_)
 
@@ -149,6 +153,7 @@ def main(args, config_test, config_train):
             response = np.squeeze(response)
             max_index = np.argmax(response)
             confusion[i_class, max_index] += weight[0]
+            confusion2[i_class, max_index] += weight[0]*class_weights[class_]
 
     # Debug output to ensure that plotting is correct
     for i_class, class_ in enumerate(config_train["classes"]):
@@ -165,16 +170,26 @@ def main(args, config_test, config_train):
                    path_template.format(args.fold, "standard"), "Sum of event weights")
 
     confusion_eff1, confusion_eff2 = get_efficiency_representations(confusion)
+    confusion_eff3, confusion_eff4 = get_efficiency_representations(confusion2)
     plot_confusion(confusion_eff1, config_train["classes"],
                    path_template.format(args.fold, "efficiency1"), "Efficiency")
     plot_confusion(confusion_eff2, config_train["classes"],
                    path_template.format(args.fold, "efficiency2"), "Efficiency")
+    plot_confusion(confusion_eff3, config_train["classes"],
+                   path_template.format(args.fold, "efficiency3"), "Efficiency")
+    plot_confusion(confusion_eff4, config_train["classes"],
+                   path_template.format(args.fold, "efficiency4"), "Efficiency")
 
     confusion_pur1, confusion_pur2 = get_purity_representations(confusion)
+    confusion_pur3, confusion_pur4 = get_purity_representations(confusion2)
     plot_confusion(confusion_pur1, config_train["classes"],
                    path_template.format(args.fold, "purity1"), "Purity")
     plot_confusion(confusion_pur2, config_train["classes"],
                    path_template.format(args.fold, "purity2"), "Purity")
+    plot_confusion(confusion_pur3, config_train["classes"],
+                   path_template.format(args.fold, "purity3"), "Purity")
+    plot_confusion(confusion_pur4, config_train["classes"],
+                   path_template.format(args.fold, "purity4"), "Purity")
 
 
 if __name__ == "__main__":
