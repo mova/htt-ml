@@ -167,7 +167,9 @@ def main(args, config_test, config_train):
                                  "fold{}_keras_confusion_{}")
 
     plot_confusion(confusion, config_train["classes"],
-                   path_template.format(args.fold, "standard"), "Sum of event weights")
+                   path_template.format(args.fold, "standard"), "Arbitrary unit")
+    plot_confusion(confusion2, config_train["classes"],
+                   path_template.format(args.fold, "standard_cw"), "Arbitrary unit")
 
     confusion_eff1, confusion_eff2 = get_efficiency_representations(confusion)
     confusion_eff3, confusion_eff4 = get_efficiency_representations(confusion2)
@@ -176,9 +178,9 @@ def main(args, config_test, config_train):
     plot_confusion(confusion_eff2, config_train["classes"],
                    path_template.format(args.fold, "efficiency2"), "Efficiency")
     plot_confusion(confusion_eff3, config_train["classes"],
-                   path_template.format(args.fold, "efficiency3"), "Efficiency")
+                   path_template.format(args.fold, "efficiency_cw1"), "Efficiency")
     plot_confusion(confusion_eff4, config_train["classes"],
-                   path_template.format(args.fold, "efficiency4"), "Efficiency")
+                   path_template.format(args.fold, "efficiency_cw2"), "Efficiency")
 
     confusion_pur1, confusion_pur2 = get_purity_representations(confusion)
     confusion_pur3, confusion_pur4 = get_purity_representations(confusion2)
@@ -187,9 +189,9 @@ def main(args, config_test, config_train):
     plot_confusion(confusion_pur2, config_train["classes"],
                    path_template.format(args.fold, "purity2"), "Purity")
     plot_confusion(confusion_pur3, config_train["classes"],
-                   path_template.format(args.fold, "purity3"), "Purity")
+                   path_template.format(args.fold, "purity_cw1"), "Purity")
     plot_confusion(confusion_pur4, config_train["classes"],
-                   path_template.format(args.fold, "purity4"), "Purity")
+                   path_template.format(args.fold, "purity_cw2"), "Purity")
 
 
 if __name__ == "__main__":
