@@ -88,6 +88,14 @@ def plot_confusion(confusion, classes, filename, label, markup='{:.2f}'):
     plt.savefig(filename+".png", bbox_inches='tight')
     plt.savefig(filename+".pdf", bbox_inches='tight')
 
+    d = {}
+    for i1, c1 in enumerate(classes):
+        d[c1] = {}
+        for i2, c2 in enumerate(classes):
+            d[c1][c2] = float(confusion[i1, i2])
+    f = open(filename+".yaml", "w")
+    yaml.dump(d, f)
+
 
 def print_matrix(p, title):
     stdout.write(title + '\n')
