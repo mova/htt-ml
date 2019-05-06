@@ -101,11 +101,11 @@ def main(args, config):
         y[class_].append(y_class)
 
     # Stack inputs, targets and weights to a Keras-readable dataset
-    
-    x = np.vstack(x)  # inputs
-    y = np.vstack(y)  # targets
-    w = np.vstack(w) * config["global_weight_scale"]  # weights
-    w = np.squeeze(w)  # needed to get weights into keras
+    for class_ in classes:
+        x[class_] = np.vstack(x[class_])  # inputs
+        y[class_] = np.vstack(y[class_])  # targets
+        w[class_] = np.vstack(w[class_]) * config["global_weight_scale"]  # weights
+        w[class_] = np.squeeze(w[class_])  # needed to get weights into keras
 
     # Perform input variable transformation and pickle scaler object
     logger.info("Use preprocessing method %s.", config["preprocessing"])
